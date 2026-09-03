@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BhashaTrans Pro - Hindi ↔ Punjabi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
+
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    
+    <header class="mb-10 text-center">
+      <div class="inline-flex items-center justify-center p-3 bg-slate-900 rounded-2xl mb-4 shadow-xl text-white">
+        <i data-lucide="languages" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black tracking-tight uppercase mb-2 text-slate-900">
+        BhashaTrans Pro
+      </h1>
+      <p class="text-sm font-bold uppercase tracking-widest text-slate-500">
+        Gemini Powered • Editorial Translator
+      </p>
+    </header>
+
+    <div class="flex items-center justify-center gap-6 mb-8">
+      <div class="flex-1 text-right">
+        <span id="sourceLabel" class="text-2xl font-black uppercase text-slate-800">Hindi</span>
+      </div>
+      <button
+        onclick="handleSwap()"
+        class="p-3 bg-slate-900 text-white rounded-full hover:scale-110 transition-transform active:scale-95 shadow-lg flex items-center justify-center"
+        title="Swap Languages"
+      >
+        <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
+      </button>
+      <div class="flex-1 text-left">
+        <span id="targetLabel" class="text-2xl font-black uppercase text-slate-800">Punjabi</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Input Panel -->
+      <div class="relative bg-white border-2 border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition">
+        <textarea
+          id="inputText"
+          oninput="handleInputChange()"
+          placeholder="ਹਿੰਦੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..."
+          class="w-full h-80 p-6 text-lg font-medium focus:outline-none resize-none placeholder:text-slate-300"
+        ></textarea>
+        <div class="absolute bottom-4 right-4 flex gap-2">
+          <button
+            id="copyInputBtn"
+            onclick="copyToClipboard('input')"
+            class="p-2 hover:bg-slate-100 rounded-lg transition text-slate-400 hover:text-slate-900"
+            title="ਕਾਪੀ ਕਰੋ"
+          >
+            <i data-lucide="copy" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="handleClear()"
+            class="p-2 hover:bg-slate-100 rounded-lg transition text-slate-400 hover:text-slate-900"
+            title="ਸਾਫ਼ ਕਰੋ"
+          >
+            <i data-lucide="trash-2" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Output Panel -->
+      <div class="relative bg-white border-2 border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
+        <div id="loadingState" class="hidden flex-1 flex flex-col items-center justify-center p-6 gap-3">
+          <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-slate-600"></i>
+          <span class="text-sm font-semibold text-slate-500 tracking-wide">ਪੱਤਰਕਾਰੀ ਸ਼ੈਲੀ ਵਿੱਚ ਤਰਜਮਾ ਹੋ ਰਿਹਾ ਹੈ...</span>
+        </div>
+
+        <div
+          id="outputText"
+          class="w-full h-80 p-6 text-lg font-medium overflow-y-auto whitespace-pre-wrap text-slate-300 italic"
+        >ਤਰਜਮਾ ਇੱਥੇ ਦਿਖਾਈ ਦੇਵੇਗਾ...</div>
+
+        <div id="outputActions" class="hidden absolute bottom-4 right-4">
+          <button
+            id="copyOutputBtn"
+            onclick="copyToClipboard('output')"
+            class="p-2 hover:bg-slate-100 rounded-lg transition text-slate-400 hover:text-slate-900"
+            title="ਅਨੁਵਾਦ ਕਾਪੀ ਕਰੋ"
+          >
+            <i data-lucide="copy" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button
+        id="translateBtn"
+        onclick="handleTranslate()"
+        disabled
+        class="px-12 py-4 bg-slate-900 text-white text-lg font-black uppercase tracking-widest rounded-2xl shadow-lg hover:bg-slate-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+      >
+        Translate Now
+      </button>
+      <button
+        onclick="handleClear()"
+        class="px-12 py-4 border-2 border-slate-200 text-slate-600 text-lg font-black uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all active:scale-95"
+      >
+        Clear All
+      </button>
+    </div>
+
+  </div>
+
+<script>
+  // ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਿੱਤੀ ਗਈ ਕੀਅ
+  const GEMINI_API_KEY = "AQ.Ab8RN6LaYn2sCmJO4GWagTuk_goSzz6NVKCRnFSjb_Pws7T9aA";
+
+  let sourceLang = 'Hindi';
+  let targetLang = 'Punjabi';
+  let rawOutput = '';
+
+  lucide.createIcons();
+
+  function handleInputChange() {
+    const text = document.getElementById('inputText').value.trim();
+    document.getElementById('translateBtn').disabled = text.length === 0;
+  }
+
+  function handleSwap() {
+    const tempLang = sourceLang;
+    sourceLang = targetLang;
+    targetLang = tempLang;
+
+    document.getElementById('sourceLabel').innerText = sourceLang;
+    document.getElementById('targetLabel').innerText = targetLang;
+
+    const inputElem = document.getElementById('inputText');
+    inputElem.placeholder = sourceLang === 'Hindi' ? "ਹਿੰਦੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..." : "ਪੰਜਾਬੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ...";
+
+    const prevInput = inputElem.value;
+    inputElem.value = rawOutput;
+    rawOutput = prevInput;
+
+    updateOutputUI(rawOutput);
+    handleInputChange();
+  }
+
+  function handleClear() {
+    document.getElementById('inputText').value = '';
+    rawOutput = '';
+    updateOutputUI('');
+    handleInputChange();
+  }
+
+  function updateOutputUI(text) {
+    const outputElem = document.getElementById('outputText');
+    const actionsElem = document.getElementById('outputActions');
+
+    if (!text) {
+      outputElem.innerText = "ਤਰਜਮਾ ਇੱਥੇ ਦਿਖਾਈ ਦੇਵੇਗਾ...";
+      outputElem.className = "w-full h-80 p-6 text-lg font-medium overflow-y-auto whitespace-pre-wrap text-slate-300 italic";
+      actionsElem.classList.add('hidden');
+    } else {
+      outputElem.innerText = text;
+      outputElem.className = "w-full h-80 p-6 text-lg font-medium overflow-y-auto whitespace-pre-wrap text-slate-900";
+      actionsElem.classList.remove('hidden');
+    }
+  }
+
+  async function handleTranslate() {
+    const text = document.getElementById('inputText').value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('translateBtn');
+    const loader = document.getElementById('loadingState');
+    const outputElem = document.getElementById('outputText');
+    const actionsElem = document.getElementById('outputActions');
+
+    btn.disabled = true;
+    btn.innerText = 'Translating...';
+    outputElem.classList.add('hidden');
+    actionsElem.classList.add('hidden');
+    loader.classList.remove('hidden');
+
+    const systemInstruction = "ਤੁਸੀਂ ਇੱਕ ਸੀਨੀਅਰ ਪੰਜਾਬੀ-ਹਿੰਦੀ ਭਾਸ਼ਾ ਸੰਪਾਦਕ ਅਤੇ ਪੱਤਰਕਾਰ ਹੋ। ਤੁਹਾਡਾ ਕੰਮ ਦਿੱਤੇ ਗਏ ਟੈਕਸਟ ਦਾ ਉੱਚ-ਪੱਧਰੀ, ਸਾਹਿਤਕ ਅਤੇ ਅਖ਼ਬਾਰੀ ਸ਼ੈਲੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ। ਸ਼ਬਦ-ਦਰ-ਸ਼ਬਦ ਮਸ਼ੀਨੀ ਅਨੁਵਾਦ ਬਿਲਕੁਲ ਨਹੀਂ ਕਰਨਾ; ਵਾਕਾਂ ਦੀ ਕੁਦਰਤੀ ਰਵਾਨਗੀ, ਠੇਠ ਮੁਹਾਵਰੇਦਾਰ ਸ਼ਬਦਾਵਲੀ ਅਤੇ ਪ੍ਰਸੰਗ ਦਾ ਖ਼ਾਸ ਖ਼ਿਆਲ ਰੱਖਣਾ ਹੈ। ਸਿਰਫ਼ ਅਤੇ ਸਿਰਫ਼ ਅਨੁਵਾਦ ਕੀਤਾ ਟੈਕਸਟ ਹੀ ਆਊਟਪੁੱਟ ਦੇਣਾ ਹੈ।";
+
+    const promptText = `Translate the following text from ${sourceLang} to ${targetLang}:\n\n${text}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: systemInstruction }]
+          },
+          contents: [{
+            parts: [{ text: promptText }]
+          }],
+          generationConfig: {
+            temperature: 0.2
+          }
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        rawOutput = data.candidates[0].content.parts[0].text.trim();
+      } else if (data.error) {
+        rawOutput = "API Error: " + data.error.message;
+      } else {
+        rawOutput = "ਤਰਜਮਾ ਪੂਰਾ ਨਹੀਂ ਹੋ ਸਕਿਆ।";
+      }
+    } catch (err) {
+      rawOutput = "Error: ਸਰਵਰ ਨਾਲ ਰਾਬਤਾ ਨਹੀਂ ਬਣ ਸਕਿਆ।";
+    } finally {
+      loader.classList.add('hidden');
+      outputElem.classList.remove('hidden');
+      updateOutputUI(rawOutput);
+      btn.disabled = false;
+      btn.innerText = 'Translate Now';
+      lucide.createIcons();
+    }
+  }
+
+  function copyToClipboard(type) {
+    const text = type === 'input' ? document.getElementById('inputText').value : rawOutput;
+    if (!text) return;
+
+    navigator.clipboard.writeText(text);
+    const btn = document.getElementById(type === 'input' ? 'copyInputBtn' : 'copyOutputBtn');
+    btn.innerHTML = `<i data-lucide="check" class="w-5 h-5 text-green-600"></i>`;
+    lucide.createIcons();
+
+    setTimeout(() => {
+      btn.innerHTML = `<i data-lucide="copy" class="w-5 h-5"></i>`;
+      lucide.createIcons();
+    }, 2000);
+  }
+</script>
+</body>
+</html>
