@@ -25,7 +25,7 @@
 
     <div class="flex items-center justify-center gap-6 mb-8">
       <div class="flex-1 text-right">
-        <span id="sourceLabel" class="text-2xl font-black uppercase text-slate-800">Hindi</span>
+        <span id="sourceLabel" class="text-2xl font-black uppercase text-slate-800">Punjabi</span>
       </div>
       <button
         onclick="handleSwap()"
@@ -35,7 +35,7 @@
         <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
       </button>
       <div class="flex-1 text-left">
-        <span id="targetLabel" class="text-2xl font-black uppercase text-slate-800">Punjabi</span>
+        <span id="targetLabel" class="text-2xl font-black uppercase text-slate-800">Hindi</span>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
         <textarea
           id="inputText"
           oninput="handleInputChange()"
-          placeholder="ਹਿੰਦੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..."
+          placeholder="ਪੰਜਾਬੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..."
           class="w-full h-80 p-6 text-lg font-medium focus:outline-none resize-none placeholder:text-slate-300"
         ></textarea>
         <div class="absolute bottom-4 right-4 flex gap-2">
@@ -112,11 +112,10 @@
   </div>
 
 <script>
-  // ਤੁਹਾਡੀ ਅਸਲੀ Groq API Key
-  const GROQ_API_KEY = "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";
+  const GROQ_API_KEY = "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";
 
-  let sourceLang = 'Hindi';
-  let targetLang = 'Punjabi';
+  let sourceLang = 'Punjabi';
+  let targetLang = 'Hindi';
   let rawOutput = '';
 
   lucide.createIcons();
@@ -135,7 +134,7 @@
     document.getElementById('targetLabel').innerText = targetLang;
 
     const inputElem = document.getElementById('inputText');
-    inputElem.placeholder = sourceLang === 'Hindi' ? "ਹਿੰਦੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..." : "ਪੰਜਾਬੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ...";
+    inputElem.placeholder = sourceLang === 'Punjabi' ? "ਪੰਜਾਬੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ..." : "ਹਿੰਦੀ ਟੈਕਸਟ ਇੱਥੇ ਦਰਜ ਕਰੋ...";
 
     const prevInput = inputElem.value;
     inputElem.value = rawOutput;
@@ -192,10 +191,10 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-70b-versatile",
           messages: [
             { role: "system", content: systemInstruction },
-            { role: "user", content: `Translate from ${sourceLang} to ${targetLang}:\n\n${text}` }
+            { role: "user", content: `Translate the following text from ${sourceLang} to ${targetLang}:\n\n${text}` }
           ],
           temperature: 0.2
         })
