@@ -11,6 +11,7 @@
 
   <div class="max-w-4xl mx-auto px-4 py-12">
     
+    <!-- Header -->
     <header class="mb-10 text-center">
       <div class="inline-flex items-center justify-center p-3 bg-slate-900 rounded-2xl mb-4 shadow-xl text-white">
         <i data-lucide="languages" class="w-8 h-8"></i>
@@ -23,6 +24,7 @@
       </p>
     </header>
 
+    <!-- Language Selector -->
     <div class="flex items-center justify-center gap-6 mb-8">
       <div class="flex-1 text-right">
         <span id="sourceLabel" class="text-2xl font-black uppercase text-slate-800">Hindi</span>
@@ -39,6 +41,7 @@
       </div>
     </div>
 
+    <!-- Translation Panels -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       
       <!-- Input Panel -->
@@ -94,6 +97,7 @@
 
     </div>
 
+    <!-- Action Buttons -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <button
         id="translateBtn"
@@ -114,7 +118,6 @@
   </div>
 
 <script>
-  // ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਿੱਤੀ ਗਈ ਕੀਅ
   const GEMINI_API_KEY = "AQ.Ab8RN6LaYn2sCmJO4GWagTuk_goSzz6NVKCRnFSjb_Pws7T9aA";
 
   let sourceLang = 'Hindi';
@@ -184,10 +187,12 @@
     actionsElem.classList.add('hidden');
     loader.classList.remove('hidden');
 
-    const systemInstruction = "ਤੁਸੀਂ ਇੱਕ ਸੀਨੀਅਰ ਪੰਜਾਬੀ-ਹਿੰਦੀ ਭਾਸ਼ਾ ਸੰਪਾਦਕ ਅਤੇ ਪੱਤਰਕਾਰ ਹੋ। ਤੁਹਾਡਾ ਕੰਮ ਦਿੱਤੇ ਗਏ ਟੈਕਸਟ ਦਾ ਉੱਚ-ਪੱਧਰੀ, ਸਾਹਿਤਕ ਅਤੇ ਅਖ਼ਬਾਰੀ ਸ਼ੈਲੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ। ਸ਼ਬਦ-ਦਰ-ਸ਼ਬਦ ਮਸ਼ੀਨੀ ਅਨੁਵਾਦ ਬਿਲਕੁਲ ਨਹੀਂ ਕਰਨਾ; ਵਾਕਾਂ ਦੀ ਕੁਦਰਤੀ ਰਵਾਨਗੀ, ਠੇਠ ਮੁਹਾਵਰੇਦਾਰ ਸ਼ਬਦਾਵਲੀ ਅਤੇ ਪ੍ਰਸੰਗ ਦਾ ਖ਼ਾਸ ਖ਼ਿਆਲ ਰੱਖਣਾ ਹੈ। ਸਿਰਫ਼ ਅਤੇ ਸਿਰਫ਼ ਅਨੁਵਾਦ ਕੀਤਾ ਟੈਕਸਟ ਹੀ ਆਊਟਪੁੱਟ ਦੇਣਾ ਹੈ।";
+    const systemInstruction = "ਤੁਸੀਂ ਇੱਕ ਸੀਨੀਅਰ ਪੰਜਾਬੀ-ਹਿੰਦੀ ਅਖ਼ਬਾਰੀ ਸੰਪਾਦਕ ਅਤੇ ਪੱਤਰਕਾਰ ਹੋ। ਤੁਹਾਡਾ ਕੰਮ ਦਿੱਤੇ ਗਏ ਟੈਕਸਟ ਦਾ ਉੱਚ-ਪੱਧਰੀ, ਸਾਹਿਤਕ ਅਤੇ ਅਖ਼ਬਾਰੀ ਸ਼ੈਲੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ। ਸ਼ਬਦ-ਦਰ-ਸ਼ਬਦ ਮਸ਼ੀਨੀ ਅਨੁਵਾਦ ਬਿਲਕੁਲ ਨਹੀਂ ਕਰਨਾ; ਵਾਕਾਂ ਦੀ ਕੁਦਰਤੀ ਰਵਾਨਗੀ, ਠੇਠ ਮੁਹਾਵਰੇਦਾਰ ਸ਼ਬਦਾਵਲੀ ਅਤੇ ਖੇਡ/ਖ਼ਬਰਾਂ ਦੇ ਪ੍ਰਸੰਗ ਦਾ ਖ਼ਾਸ ਖ਼ਿਆਲ ਰੱਖਣਾ ਹੈ। ਸਿਰਫ਼ ਅਤੇ ਸਿਰਫ਼ ਅਨੁਵਾਦ ਕੀਤਾ ਟੈਕਸਟ ਹੀ ਆਊਟਪੁੱਟ ਦੇਣਾ ਹੈ।";
 
     const promptText = `Translate the following text from ${sourceLang} to ${targetLang}:\n\n${text}`;
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    
+    // ਨਵਾਂ ਅਤੇ ਅਧਿਕਾਰਤ Gemini 3.6 Flash ਮਾਡਲ ਐਂਡਪੁਆਇੰਟ
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     try {
       const response = await fetch(endpoint, {
