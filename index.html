@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BhashaTrans Pro - Ultra Fast Translator</title>
+  <title>BhashaTrans Pro - OpenRouter Editorial Translator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -19,7 +19,7 @@
         BhashaTrans Pro
       </h1>
       <p class="text-sm font-bold uppercase tracking-widest text-slate-500">
-        High-Speed Editorial Translation
+        OpenRouter Powered • Editorial Hindi ↔ Punjabi
       </p>
     </header>
 
@@ -41,6 +41,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       
+      <!-- Input Panel -->
       <div class="relative bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
         <textarea
           id="inputText"
@@ -67,6 +68,7 @@
         </div>
       </div>
 
+      <!-- Output Panel -->
       <div class="relative bg-white border-2 border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
         <div id="loadingState" class="hidden flex-1 flex flex-col items-center justify-center p-6 gap-3">
           <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-slate-600"></i>
@@ -112,7 +114,8 @@
   </div>
 
 <script>
-  const GROQ_API_KEY = "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";
+  // ਤੁਹਾਡੀ OpenRouter API Key
+  const OPENROUTER_KEY = "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";
 
   let sourceLang = 'Hindi';
   let targetLang = 'Punjabi';
@@ -184,14 +187,16 @@
     const systemInstruction = "ਤੁਸੀਂ ਇੱਕ ਸੀਨੀਅਰ ਪੰਜਾਬੀ-ਹਿੰਦੀ ਅਖ਼ਬਾਰੀ ਸੰਪਾਦਕ ਅਤੇ ਪੱਤਰਕਾਰ ਹੋ। ਦਿੱਤੇ ਗਏ ਟੈਕਸਟ ਦਾ ਉੱਚ-ਪੱਧਰੀ, ਸਾਹਿਤਕ ਅਤੇ ਅਖ਼ਬਾਰੀ ਸ਼ੈਲੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ। ਮਸ਼ੀਨੀ ਅਨੁਵਾਦ ਬਿਲਕੁਲ ਨਹੀਂ ਕਰਨਾ; ਵਾਕਾਂ ਦੀ ਕੁਦਰਤੀ ਰਵਾਨਗੀ, ਠੇਠ ਮੁਹਾਵਰੇਦਾਰ ਸ਼ਬਦਾਵਲੀ ਅਤੇ ਪ੍ਰਸੰਗ ਦਾ ਖ਼ਾਸ ਖ਼ਿਆਲ ਰੱਖੋ। ਸਿਰਫ਼ ਅਨੁਵਾਦ ਕੀਤਾ ਟੈਕਸਟ ਹੀ ਦਿਓ।";
 
     try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json"
+          "Authorization": `Bearer ${OPENROUTER_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": window.location.href,
+          "X-Title": "BhashaTrans Pro"
         },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
+          model: "deepseek/deepseek-chat",
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: `Translate the following text from ${sourceLang} to ${targetLang}:\n\n${text}` }
